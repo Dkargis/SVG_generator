@@ -1,13 +1,11 @@
 const Shapes = require('./lib/shapes');
 const fs = require('fs');
 const path = require('path');
-const inqure = require('inquirer');
-const { type } = require('os');
+const inquirer = require('inquirer');
+const Logo = require('./lib/shapes');
 
-const shape = new Shapes();
 
-const questions = 
-    .prompt([
+const questions = [
     
     {
         type: 'list',
@@ -21,9 +19,8 @@ const questions =
     {
         type: 'input',
         name: 'color',
-        message: 'What color would you like to draw with?'
+        message: 'What color would you like to draw with?',
         validate: function (value) {
-            // Check if the input is a valid color name or number
             if (/^[a-zA-Z]+$/.test(value) || /^\d+$/.test(value)) {
               return true;
             }
@@ -36,4 +33,22 @@ const questions =
         name: 'logo',
         message: 'Instert a three letter logo'
     }
-]);
+]
+
+function generateLogo(){
+    inquirer.prompt(questions).then (answers => {
+    const shape = new Logo (answers.shape, answers.color, answers.logo)
+    const svgFilePath ='./Examples/Example.svg';
+    // const svg = shape.render(answers.shape, answers.color, answers.logo);
+    // console.log(svg);
+    console.log(answers.shape);
+    fs.writeFileSync(svgFilePath, shape.render());
+    console.log('SVG file created!');
+})
+.catch(error => {
+    console.log(error);
+}
+);
+}
+
+generateLogo();
